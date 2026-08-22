@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
+const issueRoutes = require('./routes/issues');
 
 const app = express();
 const PORT = 3000;
@@ -27,6 +28,7 @@ app.get('/test-db', async (req, res) => {
 // Any route starting with /api/auth (like /api/auth/signup) is handled
 // by the router we defined in routes/auth.js.
 app.use('/api/auth', authRoutes);
+app.use('/api/issues', issueRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
