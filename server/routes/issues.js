@@ -1,6 +1,6 @@
 const express = require('express');
 const pool = require('../db');
-const requireAuth = require('../middleware/authMiddleware');
+const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -59,6 +59,68 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong while fetching the issue.' });
+  }
+});
+
+// Upvote an issue -- requires login, since we need to know WHO is upvoting
+// (to enforce "one upvote per user per issue").
+router.post('/:id/upvote', requireAuth, async (req, res) => {
+  const issueId = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    // First, make sure the issue being upvoted actually exists.
+    const issueCheck = await pool.query('SELECT id FROM issues WHERE id = $1', [issueId]);
+    if (issueCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Issue not found.' });
+    }
+
+    await pool.query(
+      'INSERT INTO upvotes (issue_id, user_id) VALUES ($1, $2)',
+      [issueId, userId]
+    );
+
+    res.status(201).json({ message: 'Upvoted successfully.' });
+  } catch (err) {
+    // Postgres error code 23505 means "unique_violation" -- this is exactly
+    // our UNIQUE(issue_id, user_id) rule from the database design catching
+    // an attempt to upvote the same issue twice. We turn that into a clean,
+    // friendly response instead of a generic server crash message.
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'You have already upvoted this issue.' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong while upvoting.' });
+  }
+});
+
+// Update an issue's status -- ADMIN ONLY. Notice two middlewares chained
+// in a row: requireAuth runs first (proves who you are), then requireAdmin
+// runs (checks your role). If either fails, the route body never runs.
+router.patch('/:id/status', requireAuth, requireAdmin, async (req, res) => {
+  const { status } = req.body;
+  const allowedStatuses = ['reported', 'in_progress', 'resolved'];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      error: `Status must be one of: ${allowedStatuses.join(', ')}`,
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE issues SET status = $1 WHERE id = $2 RETURNING *',
+      [status, req.params.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Issue not found.' });
+    }
+
+    res.json({ issue: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong while updating the status.' });
   }
 });
 

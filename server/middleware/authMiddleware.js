@@ -1,32 +1,33 @@
 const jwt = require('jsonwebtoken');
 
-// This function runs BEFORE a route handler, whenever we attach it to a route.
-// Its job: check that a valid JWT was sent, and figure out who's making the request.
+// Checks that a request has a valid, logged-in user attached (via JWT).
 function requireAuth(req, res, next) {
-  // Browsers/Postman send the token in a header like: Authorization: Bearer <token>
   const authHeader = req.headers['authorization'];
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'No token provided. Please log in.' });
   }
 
-  // "Bearer <token>" -- we only want the part after "Bearer ".
   const token = authHeader.split(' ')[1];
 
   try {
-    // jwt.verify checks the token's signature against our secret.
-    // If someone tampered with the token, or it wasn't signed by us,
-    // or it has expired, this line throws an error automatically.
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Attach the decoded info (id, role) onto the request object,
-    // so any route using this middleware can access req.user afterward.
     req.user = decoded;
-
-    next(); // Everything checked out -- let the actual route run.
+    next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token. Please log in again.' });
   }
 }
 
-module.exports = requireAuth;
+// Checks that the logged-in user is specifically an admin.
+// IMPORTANT: this must always run AFTER requireAuth on a route, since it
+// depends on req.user already being set. It only checks the ROLE --
+// requireAuth already proved WHO the user is.
+function requireAdmin(req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required for this action.' });
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireAdmin };
