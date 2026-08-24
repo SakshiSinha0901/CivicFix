@@ -1,0 +1,83 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  background: #14151a;
+  border-bottom: 1px solid #24262e;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navbar-brand span {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9497a3;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link-active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 1.5px solid #3a3c46;
+  color: #d7d9e0;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  border-color: #5b5bff;
+  color: #ffffff;
+}
+
+.btn-solid {
+  background: #5b5bff;
+  color: #ffffff;
+  border: 1.5px solid #5b5bff;
+}
+
+.btn-solid:hover {
+  background: #4646d1;
+  border-color: #4646d1;
+}

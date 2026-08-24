@@ -1,10 +1,16 @@
 const express = require('express');
+const cors = require('cors');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
 const issueRoutes = require('./routes/issues');
 
 const app = express();
 const PORT = 3000;
+
+// cors() with no arguments allows requests from any origin -- fine for
+// local development. Before deploying for real, we'll lock this down to
+// only allow our actual live front-end address, instead of "anywhere."
+app.use(cors());
 
 // This lets our server understand JSON data sent in requests
 // (e.g. the name/email/password someone submits when signing up).
