@@ -1,30 +1,47 @@
 .signup-wrap {
+  position: relative;
   display: flex;
   justify-content: center;
   padding: 56px 24px;
+  min-height: 760px;
+  overflow: hidden;
 }
 
 .signup-card {
-  width: 420px;
+  position: relative;
+  z-index: 2;
+  width: 440px;
   max-width: 100%;
   background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #e2e4e9;
-  box-shadow: 0 8px 28px rgba(20, 21, 26, 0.06);
-  padding: 36px 36px 32px;
+  border-radius: 26px;
+  border: 1px solid #eae6d8;
+  box-shadow: 0 12px 40px rgba(33, 31, 24, 0.08);
+  padding: 40px 40px 36px;
+}
+
+.auth-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #43541b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
 }
 
 .signup-card h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 6px;
+  font-size: 27px;
+  font-weight: 800;
+  margin: 0 0 8px;
   text-align: center;
 }
 
 .signup-subtitle {
   margin: 0 0 28px;
-  font-size: 13.5px;
-  color: #6b6f7a;
+  font-size: 14px;
+  color: #6f6a5c;
+  font-weight: 600;
   line-height: 1.5;
   text-align: center;
 }
@@ -32,65 +49,71 @@
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .signup-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .signup-field label {
   font-size: 13px;
-  font-weight: 600;
-  color: #33343c;
+  font-weight: 800;
+  color: #211f18;
 }
 
 .signup-field input {
-  padding: 11px 14px;
-  border-radius: 8px;
-  border: 1.5px solid #dcdee3;
-  font-size: 14px;
+  padding: 14px 20px;
+  border-radius: 999px;
+  border: 2px solid #e6e2d2;
+  background: #f9f8f2;
+  font-size: 14.5px;
   font-family: inherit;
+  color: #211f18;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.signup-field input::placeholder {
+  color: #9a927c;
+}
+
 .signup-field input:focus {
-  border-color: #5b5bff;
-  box-shadow: 0 0 0 3px rgba(91, 91, 255, 0.12);
+  border-color: #43541b;
+  box-shadow: 0 0 0 3px rgba(67, 84, 27, 0.12);
 }
 
 .signup-hint {
   font-size: 11.5px;
-  color: #9497a3;
+  color: #9a927c;
 }
 
 .signup-error {
   margin: 0;
   font-size: 13px;
-  color: #c0392b;
-  background: #fdecea;
-  padding: 10px 12px;
-  border-radius: 8px;
+  color: #9c4a1d;
+  background: #f6e2d3;
+  padding: 10px 14px;
+  border-radius: 14px;
 }
 
 .signup-submit {
-  margin-top: 6px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #5b5bff;
+  margin-top: 4px;
+  padding: 15px;
+  border-radius: 999px;
+  background: #43541b;
   color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   border: none;
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .signup-submit:hover:not(:disabled) {
-  background: #4646d1;
+  background: #384512;
 }
 
 .signup-submit:disabled {
@@ -100,19 +123,88 @@
 
 .signup-divider {
   height: 1px;
-  background: #eceef1;
-  margin: 4px 0;
+  background: #eee9db;
+  margin: 6px 0 2px;
 }
 
 .signup-footer {
   margin: 0;
-  font-size: 13px;
-  color: #6b6f7a;
+  font-size: 13.5px;
+  color: #6f6a5c;
+  font-weight: 600;
   text-align: center;
 }
 
 .signup-footer a {
-  color: #5b5bff;
-  font-weight: 600;
+  color: #43541b;
+  font-weight: 800;
   text-decoration: none;
+}
+
+/* Decorative background artwork -- shared look with Login.css.
+   Positioned relative to the page, hidden on narrower screens so it never
+   overlaps the card once there isn't room for it either side. */
+.auth-doodle {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.auth-doodle-label {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  fill: #ffffff;
+}
+
+.auth-doodle-hazard {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  fill: #9c4a1d;
+}
+
+.auth-doodle-caption {
+  position: absolute;
+  z-index: 1;
+  font-family: 'Caveat', cursive;
+  font-size: 25px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.auth-doodle-route-left {
+  top: 30px;
+  left: 40px;
+}
+
+.auth-doodle-caption-left {
+  top: 4px;
+  left: 90px;
+  color: #43541b;
+  transform: rotate(-4deg);
+}
+
+.auth-illustration {
+  width: 320px;
+  height: auto;
+}
+
+.auth-illustration-signup {
+  top: 30px;
+  right: 10px;
+}
+
+.auth-doodle-caption-right {
+  top: 300px;
+  right: 90px;
+  color: #e8622c;
+  transform: rotate(3deg);
+}
+
+@media (max-width: 1100px) {
+  .auth-doodle,
+  .auth-doodle-caption {
+    display: none;
+  }
 }

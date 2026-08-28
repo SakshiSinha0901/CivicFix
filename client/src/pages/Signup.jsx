@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import papersIllustration from '../assets/papers-illustration.png'
 import './Signup.css'
 
 function Signup() {
@@ -53,7 +54,40 @@ function Signup() {
 
   return (
     <div className="signup-wrap">
+      {/* Everything below this comment, up to the card, is purely decorative
+          hand-drawn artwork sitting in the page background -- it has no
+          effect on the form, its state, or what gets submitted. */}
+      <svg className="auth-doodle auth-doodle-route auth-doodle-route-left" width="360" height="300" viewBox="0 0 360 300">
+        <path d="M20 30 C 90 30, 60 90, 130 100 C 200 110, 170 170, 90 190 C 40 205, 60 250, 130 260" fill="none" stroke="#211f18" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 14" />
+        <circle cx="20" cy="30" r="11" fill="#43541b" />
+        <text x="20" y="35" textAnchor="middle" className="auth-doodle-label">A</text>
+        <g transform="translate(130,260)">
+          <circle r="11" fill="#e8622c" />
+          <text x="0" y="5" textAnchor="middle" className="auth-doodle-label">B</text>
+        </g>
+        <g transform="translate(130,100)">
+          <path d="M0 -14 L12 8 L-12 8 Z" fill="none" stroke="#9c4a1d" strokeWidth="2.5" strokeLinejoin="round" />
+          <text x="0" y="4" textAnchor="middle" className="auth-doodle-hazard">!</text>
+        </g>
+      </svg>
+      <span className="auth-doodle-caption auth-doodle-caption-left">spot it &amp; report it</span>
+
+      <img
+        className="auth-doodle auth-illustration auth-illustration-signup"
+        src={papersIllustration}
+        alt=""
+        aria-hidden="true"
+      />
+      <span className="auth-doodle-caption auth-doodle-caption-right">fixed by the community</span>
+
       <div className="signup-card">
+        <div className="auth-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 21s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+        </div>
+
         <h1>Create your account</h1>
         <p className="signup-subtitle">
           Join CivicFix to report issues and track them through to resolved.

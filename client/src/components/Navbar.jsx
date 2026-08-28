@@ -1,12 +1,18 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext.jsx'
 import './Navbar.css'
 
-// The Navbar is a "component" — a self-contained, reusable piece of UI.
-// We only write it once here, and every page can reuse it just by
-// rendering <Navbar /> — that's the whole point of components in React.
 function Navbar() {
+  const { isLoggedIn, user, logout } = useAuth()
+  const navigate = useNavigate()
+
   const navLinkClass = ({ isActive }) =>
     isActive ? 'nav-link nav-link-active' : 'nav-link'
+
+  function handleLogout() {
+    logout()
+    navigate('/')
+  }
 
   return (
     <nav className="navbar">
@@ -16,7 +22,7 @@ function Navbar() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#ffffff"
+          stroke="#43541b"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -40,12 +46,23 @@ function Navbar() {
       </div>
 
       <div className="navbar-actions">
-        <NavLink to="/login" className="btn btn-outline">
-          Log In
-        </NavLink>
-        <NavLink to="/signup" className="btn btn-solid">
-          Sign Up
-        </NavLink>
+        {isLoggedIn ? (
+          <>
+            <span className="navbar-greeting">Hi, {user.name.split(' ')[0]}</span>
+            <button type="button" className="btn btn-outline" onClick={handleLogout}>
+              Log Out
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className="btn btn-outline">
+              Log In
+            </NavLink>
+            <NavLink to="/signup" className="btn btn-solid">
+              Sign Up
+            </NavLink>
+          </>
+        )}
       </div>
     </nav>
   )

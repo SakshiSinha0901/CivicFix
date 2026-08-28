@@ -28,6 +28,10 @@ A public website for reporting local civic issues (potholes, garbage, broken str
 
 **Explicitly not using:** NestJS.
 
+## Frontend visual design — strict rule
+
+`design.md` (repo root) is the single source of truth for CivicFix's visual design: color tokens, typography, spacing, and per-page component specs. Any AI assistant or contributor working on the frontend must follow `design.md` exactly and must NOT deviate from it based on its own judgment — if a change isn't covered there, or seems like it should be different, ASK THE USER FIRST rather than deciding independently. Any proposed change to `design.md` itself must be shown to the user for approval before the file is edited or before any code is changed to match a new version of it.
+
 ## Local environment
 
 - Windows machine. Node.js v24.x, Git, VS Code, PostgreSQL 17 all installed locally.
@@ -49,6 +53,7 @@ CivicFix/
 │       ├── auth.js      # /api/auth/signup, /api/auth/login
 │       └── issues.js    # /api/issues/* (create, list, get, upvote, status)
 ├── .gitignore
+├── design.md            # Frontend design system — colors, type, spacing, component specs (see "Frontend visual design" above)
 └── CLAUDE.md / log.md
 ```
 

@@ -35,9 +35,22 @@ router.post('/', requireAuth, async (req, res) => {
 
 // Get all issues -- deliberately public, no requireAuth here.
 // Anyone should be able to browse reported issues, even without an account.
+//
+// This query does a LEFT JOIN against the upvotes table: think of it as
+// temporarily attaching every matching upvote row to its issue, so we can
+// COUNT() how many are attached to each one. LEFT JOIN (rather than a plain
+// JOIN) means an issue with ZERO upvotes still shows up, just with a count
+// of 0, instead of disappearing from the list entirely. GROUP BY issues.id
+// tells Postgres "count per issue," not one grand total for everything.
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM issues ORDER BY created_at DESC');
+    const result = await pool.query(
+      `SELECT issues.*, COUNT(upvotes.user_id) AS upvote_count
+       FROM issues
+       LEFT JOIN upvotes ON upvotes.issue_id = issues.id
+       GROUP BY issues.id
+       ORDER BY issues.created_at DESC`
+    );
     res.json({ issues: result.rows });
   } catch (err) {
     console.error(err);
@@ -45,11 +58,18 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get a single issue by its id -- also public.
-// ":id" in the route path means "whatever value is here, make it available as req.params.id"
+// Get a single issue by its id -- also public, and now includes the same
+// upvote_count calculation so the future Issue Detail page has it too.
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM issues WHERE id = $1', [req.params.id]);
+    const result = await pool.query(
+      `SELECT issues.*, COUNT(upvotes.user_id) AS upvote_count
+       FROM issues
+       LEFT JOIN upvotes ON upvotes.issue_id = issues.id
+       WHERE issues.id = $1
+       GROUP BY issues.id`,
+      [req.params.id]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Issue not found.' });

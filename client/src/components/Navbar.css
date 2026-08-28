@@ -2,10 +2,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 48px;
-  background: #14151a;
-  border-bottom: 1px solid #24262e;
-  font-family: 'Manrope', system-ui, sans-serif;
+  padding: 20px 48px;
+  background: #f3f1e7;
+  border-bottom: 2px solid #e6e2d2;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
 }
 
 .navbar-brand {
@@ -16,68 +16,80 @@
 }
 
 .navbar-brand span {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 21px;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #211f18;
   letter-spacing: -0.2px;
 }
 
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 36px;
 }
 
 .nav-link {
-  font-size: 14px;
-  font-weight: 500;
-  color: #9497a3;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #6f6a5c;
   text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
 }
 
 .nav-link:hover {
-  color: #ffffff;
+  color: #211f18;
 }
 
 .nav-link-active {
-  color: #ffffff;
-  font-weight: 600;
+  color: #211f18;
+  border-bottom-color: #e8622c;
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+.navbar-greeting {
+  font-size: 14px;
+  font-weight: 700;
+  color: #211f18;
 }
 
 .btn {
-  padding: 9px 18px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 800;
   text-decoration: none;
   cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .btn-outline {
-  border: 1.5px solid #3a3c46;
-  color: #d7d9e0;
+  border: 2px solid #211f18;
+  color: #211f18;
   background: transparent;
 }
 
 .btn-outline:hover {
-  border-color: #5b5bff;
-  color: #ffffff;
+  border-color: #43541b;
+  color: #43541b;
 }
 
 .btn-solid {
-  background: #5b5bff;
+  background: #43541b;
   color: #ffffff;
-  border: 1.5px solid #5b5bff;
+  border: 2px solid #43541b;
 }
 
 .btn-solid:hover {
-  background: #4646d1;
-  border-color: #4646d1;
+  background: #384512;
+  border-color: #384512;
 }

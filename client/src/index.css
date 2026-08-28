@@ -4,13 +4,13 @@
 
 body {
   margin: 0;
-  font-family: 'Manrope', system-ui, 'Segoe UI', Roboto, sans-serif;
-  background: #f4f5f7;
-  color: #14151a;
+  font-family: 'Nunito Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+  background: #f3f1e7;
+  color: #211f18;
 }
 
 h1,
 h2,
 h3 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Baloo 2', sans-serif;
 }
