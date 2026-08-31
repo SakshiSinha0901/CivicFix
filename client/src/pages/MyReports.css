@@ -1,0 +1,210 @@
+.myreports-page {
+  padding-bottom: 40px;
+  position: relative;
+}
+
+.myreports-doodle {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.myreports-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 32px 48px 4px;
+}
+
+.myreports-header h1 {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.myreports-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6f6a5c;
+  font-weight: 600;
+}
+
+/* Stat tiles -- replace the old pill tabs. All four share the same white
+   card base (including "All"), so no tile reads as a different color from
+   the rest; which one is active is shown with a border/shadow highlight
+   instead of repainting the tile a solid color. Still plain <button>s
+   underneath, so the click-to-filter behavior is unchanged. */
+.myreports-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 22px 48px 6px;
+}
+
+.myreports-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1.5px solid #e6e2d2;
+  border-radius: 18px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.myreports-tile:hover {
+  border-color: #d8d3bf;
+}
+
+.myreports-tile-active {
+  border-color: #43541b;
+  box-shadow: 0 0 0 3px rgba(67, 84, 27, 0.12);
+}
+
+.myreports-tile-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.myreports-tile-count {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #211f18;
+}
+
+.myreports-tile-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #6f6a5c;
+}
+
+@media (max-width: 700px) {
+  .myreports-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.myreports-status {
+  padding: 40px 48px;
+  font-size: 14px;
+  color: #6f6a5c;
+  font-weight: 600;
+}
+
+.myreports-status a {
+  color: #43541b;
+  font-weight: 800;
+}
+
+.myreports-status-error {
+  color: #9c4a1d;
+}
+
+.myreports-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  padding: 26px 48px 40px;
+}
+
+.myreports-empty {
+  margin: 30px 48px 0;
+  padding: 40px;
+  border: 2px dashed #d8d3bf;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.myreports-empty-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6f6a5c;
+}
+
+.myreports-empty-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #43541b;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.myreports-empty-btn:hover {
+  background: #384512;
+}
+
+.myreports-locked {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.myreports-locked h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+.myreports-locked-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  background: #43541b;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.myreports-locked-btn:hover {
+  background: #384512;
+}
+
+@media (max-width: 900px) {
+  .myreports-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .myreports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .myreports-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .myreports-tiles {
+    grid-template-columns: 1fr;
+  }
+
+  .myreports-doodle {
+    display: none;
+  }
+}

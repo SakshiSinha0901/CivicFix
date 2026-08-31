@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import './IssueDetail.css'
@@ -9,11 +9,9 @@ const STATUS_LABELS = {
   resolved: 'Resolved',
 }
 
-const STATUS_CLASSES = {
-  reported: 'badge-status-reported',
-  in_progress: 'badge-status-in-progress',
-  resolved: 'badge-status-resolved',
-}
+// The order these appear in matters -- it's also the order of the stepper
+// below, since the three real statuses always move left to right.
+const STATUS_STEPS = ['reported', 'in_progress', 'resolved']
 
 function timeAgo(dateString) {
   const seconds = Math.floor((new Date() - new Date(dateString)) / 1000)
@@ -30,6 +28,19 @@ function timeAgo(dateString) {
     if (count >= 1) return `${count} ${unit.label}${count > 1 ? 's' : ''} ago`
   }
   return 'just now'
+}
+
+// Turns the issue's real `status` string into "done / current / upcoming"
+// for each of the three steps, so the stepper always reflects the actual
+// state machine (reported -> in_progress -> resolved) rather than anything
+// invented. An unrecognized status falls back to step 0 rather than crashing.
+function getStepState(status) {
+  const currentIndex = Math.max(STATUS_STEPS.indexOf(status), 0)
+  return STATUS_STEPS.map((step, index) => {
+    if (index < currentIndex) return 'done'
+    if (index === currentIndex) return 'current'
+    return 'upcoming'
+  })
 }
 
 function IssueDetail() {
@@ -136,6 +147,8 @@ function IssueDetail() {
     return null
   }
 
+  const stepStates = getStepState(issue.status)
+
   return (
     <div className="issue-detail-page">
       <div className="issue-detail-column">
@@ -156,59 +169,114 @@ function IssueDetail() {
         </Link>
 
         <div className="issue-detail-card">
-          {issue.photo_url ? (
-            <img className="issue-detail-photo" src={issue.photo_url} alt={issue.title} />
-          ) : (
-            <div className="issue-detail-photo issue-detail-photo-empty">No photo provided</div>
-          )}
+          {/* Purely decorative -- same hand-drawn dashed-route family used on
+              Signup/Login, tucked into the corner so this page still feels
+              part of the same illustrated CivicFix identity. */}
+          <svg className="issue-detail-doodle" width="150" height="120" viewBox="0 0 150 120" aria-hidden="true">
+            <path
+              d="M130 10 C 100 10, 115 45, 80 50 C 50 54, 60 85, 100 92"
+              fill="none"
+              stroke="#211f18"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray="1 12"
+            />
+            <circle cx="130" cy="10" r="6" fill="#e8622c" />
+          </svg>
 
-          <div className="issue-detail-content">
-            <div className="issue-detail-badges">
-              <span className="badge badge-category">{issue.category}</span>
-              <span className={`badge ${STATUS_CLASSES[issue.status] || 'badge-status-reported'}`}>
-                {STATUS_LABELS[issue.status] || issue.status}
+          <div className="issue-detail-top">
+            <div className="issue-detail-photo-wrap">
+              {issue.photo_url ? (
+                <img className="issue-detail-photo" src={issue.photo_url} alt={issue.title} />
+              ) : (
+                <div className="issue-detail-photo issue-detail-photo-empty">No photo provided</div>
+              )}
+              <div className="issue-detail-photo-overlay" />
+              <span className="issue-detail-category-chip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9c4a1d" strokeWidth="2.5" strokeLinejoin="round">
+                  <path d="M12 3 L21.5 20 L2.5 20 Z" />
+                  <line x1="12" y1="9" x2="12" y2="14" stroke="#9c4a1d" strokeWidth="2" />
+                  <circle cx="12" cy="17" r="1" fill="#9c4a1d" />
+                </svg>
+                {issue.category}
               </span>
             </div>
 
-            <h1 className="issue-detail-title">{issue.title}</h1>
+            <div className="issue-detail-sidebar">
+              <h1 className="issue-detail-title">{issue.title}</h1>
+              <div className="issue-detail-underline" />
 
-            <div className="issue-detail-meta">
-              <span className="issue-detail-meta-item">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              <div className="issue-detail-stepper">
+                <div className="issue-detail-stepper-track">
+                  {STATUS_STEPS.map((step, index) => (
+                    <Fragment key={step}>
+                      <span className={`issue-detail-step-dot issue-detail-step-dot-${stepStates[index]}`} />
+                      {index < STATUS_STEPS.length - 1 && (
+                        <span
+                          className={`issue-detail-step-line ${
+                            stepStates[index + 1] !== 'upcoming' ? 'issue-detail-step-line-done' : ''
+                          }`}
+                        />
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
+                <div className="issue-detail-step-labels">
+                  {STATUS_STEPS.map((step, index) => (
+                    <span key={step} className={`issue-detail-step-label issue-detail-step-label-${stepStates[index]}`}>
+                      {STATUS_LABELS[step]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="issue-detail-meta">
+                <span className="issue-detail-meta-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 21s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                  {issue.location}
+                </span>
+                <span className="issue-detail-meta-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="8" r="3.2" />
+                    <path d="M5 20c0-3.87 3.13-7 7-7s7 3.13 7 7" />
+                  </svg>
+                  Reported by {issue.reporter_name}
+                </span>
+                <span className="issue-detail-meta-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 3" />
+                  </svg>
+                  Reported {timeAgo(issue.created_at)}
+                </span>
+              </div>
+
+              <div className="issue-detail-upvote-row">
+                <button
+                  type="button"
+                  className="issue-detail-upvote"
+                  onClick={handleUpvote}
+                  disabled={isUpvoting || hasUpvoted}
                 >
-                  <path d="M12 21s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z" />
-                  <circle cx="12" cy="9" r="2.5" />
-                </svg>
-                {issue.location}
-              </span>
-              <span className="issue-detail-meta-item">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3 3" />
-                </svg>
-                Reported {timeAgo(issue.created_at)}
-              </span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 19V5M5 12l7-7 7 7" />
+                  </svg>
+                  <span>{hasUpvoted ? 'Upvoted' : 'Upvote'}</span>
+                </button>
+                <span className="issue-detail-upvote-count">{issue.upvote_count ?? 0}</span>
+              </div>
+
+              {upvoteMessage && <p className="issue-detail-upvote-message">{upvoteMessage}</p>}
             </div>
+          </div>
 
-            <div className="issue-detail-divider" />
+          <div className="issue-detail-divider" />
 
+          <div className="issue-detail-description-wrap">
+            <span className="issue-detail-description-label">Description</span>
             {issue.description ? (
               <p className="issue-detail-description">{issue.description}</p>
             ) : (
@@ -216,32 +284,8 @@ function IssueDetail() {
                 No description provided.
               </p>
             )}
-
-            <button
-              type="button"
-              className="issue-detail-upvote"
-              onClick={handleUpvote}
-              disabled={isUpvoting || hasUpvoted}
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-              <span>
-                {hasUpvoted ? 'Upvoted' : 'Upvote'} · {issue.upvote_count ?? 0}
-              </span>
-            </button>
-
-            {upvoteMessage && <p className="issue-detail-upvote-message">{upvoteMessage}</p>}
           </div>
+
         </div>
       </div>
     </div>

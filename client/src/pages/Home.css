@@ -42,6 +42,99 @@
   background: #384512;
 }
 
+.home-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin: 20px 48px 4px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #eae6d8;
+  border-radius: 18px;
+}
+
+.home-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.home-filter-field:first-child {
+  flex: 0 0 200px;
+}
+
+.home-filter-field:last-child {
+  flex: 1;
+}
+
+.home-filter-field label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #6f6a5c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.home-filter-field select,
+.home-filter-field input {
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 2px solid #e6e2d2;
+  background: #f9f8f2;
+  font-size: 14px;
+  font-family: inherit;
+  color: #211f18;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.home-filter-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236f6a5c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 36px;
+}
+
+.home-filter-field input::placeholder {
+  color: #9a927c;
+}
+
+.home-filter-field select:focus,
+.home-filter-field input:focus {
+  border-color: #43541b;
+  box-shadow: 0 0 0 3px rgba(67, 84, 27, 0.12);
+}
+
+.home-filters-clear {
+  padding: 11px 4px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: #9c4a1d;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.home-filters-clear:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .home-filters {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 16px 24px 4px;
+  }
+
+  .home-filter-field:first-child {
+    flex: initial;
+  }
+}
+
 .home-status {
   padding: 40px 48px;
   font-size: 14px;

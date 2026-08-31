@@ -5,7 +5,7 @@
 }
 
 .issue-detail-column {
-  width: 720px;
+  width: 900px;
   max-width: 100%;
 }
 
@@ -25,16 +25,43 @@
 }
 
 .issue-detail-card {
+  position: relative;
   background: #ffffff;
   border-radius: 26px;
   border: 1px solid #eae6d8;
+  box-shadow: 0 16px 44px rgba(33, 31, 24, 0.09);
   overflow: hidden;
 }
 
+/* Purely decorative -- same hand-drawn dashed-route family used on
+   Signup/Login. Sits above the content but never intercepts clicks. */
+.issue-detail-doodle {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.issue-detail-top {
+  display: flex;
+  align-items: stretch;
+}
+
+.issue-detail-photo-wrap {
+  position: relative;
+  flex: 0 0 54%;
+  padding: 16px 0 16px 16px;
+}
+
 .issue-detail-photo {
-  height: 340px;
+  height: 100%;
+  min-height: 400px;
   width: 100%;
   object-fit: cover;
+  border-radius: 20px;
+  overflow: hidden;
+  display: block;
   background: linear-gradient(135deg, #b7c08a 0%, #7c8f4a 100%);
 }
 
@@ -42,97 +69,145 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e9e5d6;
   font-size: 13px;
-  color: #9a927c;
+  color: #f3f1e7;
   font-weight: 700;
 }
 
-.issue-detail-content {
-  padding: 32px 32px 36px;
+.issue-detail-photo-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  height: 40%;
+  border-radius: 0 0 20px 20px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
 }
 
-.issue-detail-badges {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.badge {
-  font-size: 12px;
-  font-weight: 800;
-  padding: 5px 13px;
+.issue-detail-category-chip {
+  position: absolute;
+  left: 16px;
+  bottom: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
   border-radius: 999px;
-}
-
-.badge-category {
-  background: #f9f8f2;
-  border: 1.5px solid #e6e2d2;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 12.5px;
+  font-weight: 800;
   color: #211f18;
 }
 
-.badge-status-reported {
-  background: #f6e2d3;
-  color: #9c4a1d;
-}
-
-.badge-status-in-progress {
-  background: #f4ecc9;
-  color: #7a5c12;
-}
-
-.badge-status-resolved {
-  background: #dfe8cd;
-  color: #45571f;
+.issue-detail-sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 32px 28px;
 }
 
 .issue-detail-title {
   font-family: 'Baloo 2', sans-serif;
-  font-size: 27px;
+  font-size: 26px;
   font-weight: 800;
-  margin: 0 0 14px;
+  margin: 0 0 10px;
+  line-height: 1.22;
+}
+
+.issue-detail-underline {
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: #e8622c;
+  margin-bottom: 22px;
+}
+
+.issue-detail-stepper {
+  margin-bottom: 22px;
+}
+
+.issue-detail-stepper-track {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.issue-detail-step-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: #e6e2d2;
+  flex-shrink: 0;
+}
+
+.issue-detail-step-dot-done {
+  background: #43541b;
+}
+
+.issue-detail-step-dot-current {
+  width: 15px;
+  height: 15px;
+  background: #e8622c;
+  box-shadow: 0 0 0 4px rgba(232, 98, 44, 0.18);
+}
+
+.issue-detail-step-line {
+  flex: 1;
+  height: 3px;
+  background: #e6e2d2;
+}
+
+.issue-detail-step-line-done {
+  background: #43541b;
+}
+
+.issue-detail-step-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #9a927c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.issue-detail-step-label-done {
+  color: #43541b;
+}
+
+.issue-detail-step-label-current {
+  color: #e8622c;
 }
 
 .issue-detail-meta {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  gap: 11px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
 }
 
 .issue-detail-meta-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 13px;
   color: #6f6a5c;
   font-weight: 700;
 }
 
-.issue-detail-divider {
-  height: 1px;
-  background: #eee9db;
-  margin-bottom: 24px;
-}
-
-.issue-detail-description {
-  margin: 0 0 28px;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: #33332a;
-}
-
-.issue-detail-description-empty {
-  color: #9a927c;
-  font-style: italic;
+.issue-detail-upvote-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .issue-detail-upvote {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 26px;
+  padding: 14px 24px;
   border-radius: 999px;
   background: #43541b;
   color: #ffffff;
@@ -153,11 +228,55 @@
   cursor: not-allowed;
 }
 
+.issue-detail-upvote-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 999px;
+  background: #f9f8f2;
+  border: 1.5px solid #e6e2d2;
+  color: #211f18;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
 .issue-detail-upvote-message {
   margin: 10px 0 0;
   font-size: 12.5px;
   color: #6f6a5c;
   font-weight: 600;
+}
+
+.issue-detail-divider {
+  height: 1px;
+  background: #eee9db;
+  margin: 0 32px;
+}
+
+.issue-detail-description-wrap {
+  padding: 24px 32px 36px;
+}
+
+.issue-detail-description-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #9a927c;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.issue-detail-description {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #33332a;
+}
+
+.issue-detail-description-empty {
+  color: #9a927c;
+  font-style: italic;
 }
 
 .issue-detail-status {
@@ -170,4 +289,23 @@
 
 .issue-detail-status-error {
   color: #9c4a1d;
+}
+
+@media (max-width: 760px) {
+  .issue-detail-top {
+    flex-direction: column;
+  }
+
+  .issue-detail-photo-wrap {
+    flex: none;
+    padding: 16px 16px 0;
+  }
+
+  .issue-detail-photo {
+    min-height: 240px;
+  }
+
+  .issue-detail-doodle {
+    display: none;
+  }
 }

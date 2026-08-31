@@ -36,6 +36,16 @@ app.get('/test-db', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/issues', issueRoutes);
 
+// Catches errors passed via next(err) anywhere above -- in practice this is
+// almost always the photo-upload middleware rejecting a file (too big, or
+// not an image), since everything else already handles its own errors with
+// try/catch. Without this, Express's default error page would send back
+// HTML instead of JSON, which would break the front-end's error handling.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(400).json({ error: err.message || 'Something went wrong with your upload.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
