@@ -5,11 +5,23 @@ const pool = require('../db');
 
 const router = express.Router();
 
+// Letters, spaces, hyphens, and apostrophes only -- catches a name like
+// "12345" or "John123" that a well-meaning frontend check could otherwise
+// be bypassed for (e.g. a request sent directly through Postman, skipping
+// the browser entirely). This is the SAME rule as Signup.jsx's frontend
+// check, kept here too on purpose -- never trust that validation only
+// happened on the client.
+const NAME_PATTERN = /^[A-Za-z][A-Za-z\s'-]*$/;
+
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Name, email, and password are all required.' });
+  }
+
+  if (!NAME_PATTERN.test(name.trim())) {
+    return res.status(400).json({ error: 'Full name can only contain letters (no numbers or symbols).' });
   }
 
   try {

@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { API_BASE_URL } from '../config.js'
 import './IssueDetail.css'
 
 const STATUS_LABELS = {
@@ -68,7 +69,7 @@ function IssueDetail() {
       setIsLoading(true)
       setError('')
       try {
-        const response = await fetch(`http://localhost:3000/api/issues/${id}`)
+        const response = await fetch(`${API_BASE_URL}/api/issues/${id}`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -101,7 +102,7 @@ function IssueDetail() {
       // this request -- "Bearer <token>" is the standard format for sending
       // a JWT. Our requireAuth middleware on the backend reads this exact
       // header to verify the token and identify the logged-in user.
-      const response = await fetch(`http://localhost:3000/api/issues/${id}/upvote`, {
+      const response = await fetch(`${API_BASE_URL}/api/issues/${id}/upvote`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })

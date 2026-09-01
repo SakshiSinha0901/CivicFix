@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { API_BASE_URL } from '../config.js'
 import './ReportIssue.css'
 
 const CATEGORIES = ['Pothole', 'Garbage', 'Broken Streetlight', 'Water Leakage']
@@ -86,7 +87,7 @@ function ReportIssue() {
         body.append('photo', photoFile)
       }
 
-      const response = await fetch('http://localhost:3000/api/issues', {
+      const response = await fetch(`${API_BASE_URL}/api/issues`, {
         method: 'POST',
         headers: {
           // Same pattern as everywhere else -- the server reads WHO is

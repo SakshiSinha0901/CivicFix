@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import IssueCard from '../components/IssueCard.jsx'
+import { API_BASE_URL } from '../config.js'
 import './Home.css'
 
 // Same four categories as the Report Issue form's dropdown -- kept in sync
@@ -48,7 +49,7 @@ function Home() {
         if (debouncedLocation) params.set('location', debouncedLocation)
 
         const query = params.toString()
-        const url = `http://localhost:3000/api/issues${query ? `?${query}` : ''}`
+        const url = `${API_BASE_URL}/api/issues${query ? `?${query}` : ''}`
 
         const response = await fetch(url)
         const data = await response.json()

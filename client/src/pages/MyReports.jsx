@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import IssueCard from '../components/IssueCard.jsx'
+import { API_BASE_URL } from '../config.js'
 import './MyReports.css'
 
 // The three real statuses an issue can have, plus "all" as the default tab.
@@ -64,7 +65,7 @@ function MyReports() {
 
     async function fetchMyIssues() {
       try {
-        const response = await fetch('http://localhost:3000/api/issues/mine', {
+        const response = await fetch(`${API_BASE_URL}/api/issues/mine`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         const data = await response.json()

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { API_BASE_URL } from '../config.js'
 import papersIllustration from '../assets/papers-illustration.png'
 import './Signup.css'
 
@@ -20,6 +21,17 @@ function Signup() {
     e.preventDefault() // stop the browser's normal "reload the page" behavior
     setError('')
 
+    // A name should be made of letters, not digits -- catches something like
+    // typing "12345" into this field by mistake. Spaces, hyphens, and
+    // apostrophes are allowed too, since real names use them ("Mary-Jane",
+    // "O'Brien"). This regex is a "test": ^ and $ mean "the WHOLE string,
+    // start to finish, must match" -- not just some piece of it.
+    const NAME_PATTERN = /^[A-Za-z][A-Za-z\s'-]*$/
+    if (!NAME_PATTERN.test(form.name.trim())) {
+      setError('Full name can only contain letters (no numbers or symbols).')
+      return
+    }
+
     if (form.password.length < 8) {
       setError('Password must be at least 8 characters.')
       return
@@ -27,7 +39,7 @@ function Signup() {
 
     setIsSubmitting(true)
     try {
-      const response = await fetch('http://localhost:3000/api/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
