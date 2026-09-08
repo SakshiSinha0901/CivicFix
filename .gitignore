@@ -6,3 +6,10 @@ dist/
 build/
 .postman/
 postman/
+
+# Personal interview-prep / AI-assisted-dev working files -- kept on this
+# machine only, deliberately left out of the public GitHub repository.
+CivicFix_Interview_Prep.pdf
+CivicFix_Learning_Guide.md
+CLAUDE.md
+log.md
