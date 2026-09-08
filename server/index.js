@@ -5,12 +5,36 @@ const authRoutes = require('./routes/auth');
 const issueRoutes = require('./routes/issues');
 
 const app = express();
-const PORT = 3000;
+// Hosting platforms like Render assign their own port at run time and tell
+// your app what it is through an environment variable named PORT -- your
+// server has to listen on THAT port, not a hardcoded one, or Render won't be
+// able to route traffic to it. "process.env.PORT || 3000" means: use
+// whatever Render sets PORT to if it's set, otherwise (on your local
+// machine, where PORT is never set) fall back to 3000 like before -- so
+// nothing changes for local development.
+const PORT = process.env.PORT || 3000;
 
-// cors() with no arguments allows requests from any origin -- fine for
-// local development. Before deploying for real, we'll lock this down to
-// only allow our actual live front-end address, instead of "anywhere."
-app.use(cors());
+// CORS ("Cross-Origin Resource Sharing") is the browser's own security rule
+// that blocks a website from making requests to a DIFFERENT website's server
+// unless that server explicitly says "this origin is allowed." Our own
+// backend has to opt in to being called from our own frontend's address --
+// cors() with no arguments used to opt in to being called from literally
+// anywhere, which was fine for local development (localhost calling
+// localhost) but not for a real, live backend.
+//
+// Now that we're deployed, we only allow requests whose Origin header
+// matches this exact list -- our real Vercel frontend address, plus
+// localhost so local development (running the frontend on your own machine
+// against this same backend) still works. Any other website trying to call
+// our API directly from a browser gets blocked by this.
+const ALLOWED_ORIGINS = [
+  'https://civic-fix-liart.vercel.app',
+  'http://localhost:5173', // Vite's default local dev address
+];
+
+app.use(cors({
+  origin: ALLOWED_ORIGINS,
+}));
 
 // This lets our server understand JSON data sent in requests
 // (e.g. the name/email/password someone submits when signing up).
