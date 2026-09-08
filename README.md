@@ -2,9 +2,9 @@
 
 A public website for reporting local civic issues — potholes, overflowing garbage bins, broken streetlights, water leaks — with a photo, a category, a description, and a location. Anyone can browse and upvote an issue instead of filing a duplicate, and each issue moves through a real status: **Reported → In Progress → Resolved**.
 
-This README explains not just *what* CivicFix does, but *how* its three main pieces — the frontend, the backend, and the database — actually work together to make that happen. It's written so that both a non-technical reader and a technical one can follow it: plain-English explanations first, with the real technical terms included and defined along the way.
+This README explains not just *what* CivicFix does, but *how* its three main pieces — the frontend, the backend, and the database — actually work together to make that happen, and how the finished product is hosted so anyone in the world can use it. It's written so that both a non-technical reader and a technical one can follow it: plain-English explanations first, with the real technical terms included and defined along the way.
 
-> **Live demo:** not deployed yet — see [Deployment status](#deployment-status) below. For now, running it locally (see [Running this project yourself](#running-this-project-yourself)) is the way to see it in action.
+> **🔴 Live site:** **[civic-fix-liart.vercel.app](https://civic-fix-liart.vercel.app)** — fully deployed and usable by anyone, no setup required. Note: the backend runs on a free hosting tier that "sleeps" after 15 minutes of no traffic, so the very first request after a quiet spell can take up to ~30–50 seconds to wake up — after that it responds normally.
 
 ---
 
@@ -14,7 +14,21 @@ This README explains not just *what* CivicFix does, but *how* its three main pie
 - **Logged-in users can report a new issue**: a title, a category (pothole / garbage / broken streetlight / water leakage), a location, an optional description, and an optional photo.
 - **Every issue has a status** that starts at "Reported" and can be moved forward by an admin as the real-world problem gets fixed.
 - **Anyone can upvote** an issue instead of reporting the same problem twice — but only once per person per issue.
-- **Logged-in users can see their own reports** in one place ("My Reports"), and open any single issue to see its full detail, including who reported it.
+- **Every issue shows who reported it** by name, pulled live from the database via a SQL `JOIN` — not hardcoded — so reporting stays accountable to a real account.
+- **Logged-in users can see their own reports** in one place ("My Reports"), and open any single issue to see its full detail.
+
+## Tech stack, and why each piece was chosen
+
+| Layer | Technology | Why this one |
+|---|---|---|
+| Frontend | React + Vite | React is the most widely used library for building interactive, component-based UIs; Vite is a fast, modern build tool with a much quicker development experience than older alternatives. |
+| Routing | React Router | Gives a single-page app real, bookmarkable URLs (`/report`, `/issues/5`) without full page reloads. |
+| Backend | Node.js + Express | JavaScript on the server, so the same language is used end to end; Express is a minimal, industry-standard framework for handling web requests without unnecessary complexity. |
+| Database | PostgreSQL | A mature, free, open-source *relational* database — the right choice whenever data has real structured relationships (an issue belongs to a user, an upvote belongs to both a user and an issue). |
+| Auth | JWT + bcrypt | Industry-standard, stateless login (see the security section below) — no session storage needed on the server. |
+| File storage | Cloudinary | Databases handle large binary files like photos badly; Cloudinary is a purpose-built service for storing and serving images. |
+| Frontend hosting | Vercel | Free, and built specifically for exactly this kind of frontend (Vite/React) with automatic deployment on every GitHub push. |
+| Backend + DB hosting | Render (backend) + Neon (database) | See [Deployment architecture](#deployment-architecture) below for why these two, and why they're two separate services rather than one. |
 
 ## The three pieces, and how they depend on each other
 
@@ -49,6 +63,7 @@ Every other feature in the app (signing up, logging in, browsing the feed, upvot
 - **State** is React's term for "data a component remembers and can change, which causes the screen to re-draw when it changes." Every form field, every loading spinner, every fetched list of issues is state.
 - **AuthContext** (`client/src/context/AuthContext.jsx`) is a small piece of shared state available to the *entire* app at once, holding whether someone is logged in, their JWT, and their basic user info — built with React's **Context** feature, which exists specifically so deeply nested components don't have to pass data down through every single layer in between by hand. It also reads from and writes to `localStorage` (a small storage area the browser gives each website) so a visitor stays logged in even after refreshing the page or closing the tab.
 - Which page shows at the root URL `/` is decided by that same auth state: logged-out visitors see a marketing "Landing Hero" page; logged-in visitors see the real issue feed.
+- **`client/src/config.js`** holds the one place the frontend knows the backend's address, read from an environment variable (`VITE_API_URL`) that's set differently for local development (defaults to `http://localhost:3000`) versus the live deployed site (set to the real Render backend URL in Vercel's dashboard, baked into the site at build time). Every page that talks to the backend imports this instead of hardcoding an address.
 - All visual decisions (colors, spacing, type, per-page layout) follow a single design system documented in `design.md`, kept deliberately separate from this README since it's about visual polish, not how the app runs.
 
 ## The backend, in more depth
@@ -57,9 +72,10 @@ Every other feature in the app (signing up, logging in, browsing the feed, upvot
 - **Middleware**, again: small functions that run *before* a route's main logic, each able to stop the request early. `requireAuth` verifies a JWT is present and valid; `requireAdmin` (used only on the status-update route) additionally checks the logged-in user's role is `admin`.
 - **JWT authentication**: when someone logs in successfully, the backend creates a JWT — a signed, tamper-proof piece of text encoding just their user ID and role, set to expire after 7 days. "Signed" means it's mathematically stamped with a secret key only the server knows, so the server can always tell if anyone tried to edit it — it's the digital equivalent of an ID card with a hologram nobody can convincingly fake. The frontend stores this token and re-sends it with every request that needs to prove who's asking, so the backend never has to ask for a password more than once per session.
 - **bcrypt** is the library used to turn a real password into a `password_hash` before it's ever saved — a one-way scrambling process; there's no way to reverse a hash back into the original password, even for CivicFix itself. Logging in works by hashing the *attempted* password the same way and comparing the two hashes, never by "unscrambling" anything.
+- **Input validation, on both ends** — every field the user fills in is checked twice: once in the browser (for instant feedback) and again on the server (because the browser check can always be bypassed, e.g. by sending a request directly through a tool like Postman). For example, the "Full name" field on signup is checked against a regular expression that only allows letters, spaces, hyphens, and apostrophes — rejecting something like `"12345"` — using the exact same rule on both the frontend and backend, so validation can never be tricked by skipping the browser entirely.
 - **No ORM** — CivicFix talks to Postgres using raw parameterized SQL queries (via the `pg` library) rather than an ORM (Object-Relational Mapper, a tool that lets you write database queries using regular code instead of SQL directly). This was a deliberate choice for a first project: writing real SQL means directly learning how relational databases actually work, rather than learning a tool's abstraction over it.
 - **Parameterized queries** (`$1`, `$2`, ... placeholders filled in separately from the query string) are used everywhere user input reaches a query, specifically to prevent **SQL injection** — a well-known attack where an attacker crafts input designed to be misread as part of the SQL command itself. Never pasting raw user input directly into a SQL string is the core defense.
-- **CORS** (Cross-Origin Resource Sharing) is a browser security rule that, by default, blocks a webpage from one address from freely talking to a server at a different address. The backend explicitly opts in to allowing the frontend's address to talk to it — currently opened to any address for local development, planned to be locked down to only the real deployed frontend's URL once deployment happens.
+- **CORS** (Cross-Origin Resource Sharing) is a browser security rule that, by default, blocks a webpage from one address from freely talking to a server at a different address. In production, the backend is locked down to only accept requests from CivicFix's real deployed frontend address (plus `localhost` for local development) — any other website's browser attempting to call this API directly is blocked by the browser itself, before the request even reaches CivicFix's own validation logic.
 
 ## The database, in more depth
 
@@ -68,8 +84,8 @@ Three tables, with real relationships enforced by Postgres itself rather than ju
 - **`users`** — one row per account. Stores a bcrypt password hash, never a real password, and a `role` (`user` or `admin`).
 - **`issues`** — one row per reported issue. Every issue has a `user_id` column that must match a real row in `users` — this is a **foreign key**, Postgres's way of enforcing "this value must point to something that actually exists," which makes it structurally impossible to have an issue attached to a nonexistent user. Its `status` column can only ever be `'reported'`, `'in_progress'`, or `'resolved'` — also enforced by the database itself via a `CHECK` constraint, not just by frontend or backend code remembering to validate it.
 - **`upvotes`** — a *junction table*, the standard relational-database pattern for representing a many-to-many relationship (many users can upvote many issues). It has its own foreign keys pointing to both `users` and `issues`, plus a `UNIQUE` constraint on the *combination* of `issue_id` and `user_id` — this is what makes "one upvote per person per issue" airtight at the database level, impossible to bypass even by a bug elsewhere in the code.
-- A **JOIN** is how a single query pulls in matching data from more than one table at once — used, for example, to attach each issue's live upvote count (counted from the `upvotes` table) and its reporter's name (looked up from `users`) onto the issue data in a single trip to the database, rather than the backend making several separate queries and stitching results together itself.
-- The database connects through a **connection pool** (`server/db.js`) — a small set of already-open connections to Postgres that get reused across requests, since opening a brand new connection for every single request would be much slower.
+- A **JOIN** is how a single query pulls in matching data from more than one table at once. CivicFix uses two different kinds side by side, deliberately: a `LEFT JOIN` against `upvotes` to count each issue's upvotes (`LEFT JOIN` because an issue can legitimately have zero upvotes, and a plain `JOIN` would silently hide it), and a plain `JOIN` against `users` to attach the reporter's real name (a plain `JOIN` is correct here because every issue is guaranteed to have exactly one reporter — reporting requires being logged in).
+- The database connects through a **connection pool** (`server/db.js`) — a small set of already-open connections to Postgres that get reused across requests, since opening a brand new connection for every single request would be much slower. The same connection code supports two ways of specifying where the database lives: a single `DATABASE_URL` connection string (the format hosted providers like Neon hand you, used in production) or five separate local variables (used for local development), so the exact same code runs unchanged in both places.
 - The schema (the actual `CREATE TABLE` statements defining these three tables) lives as real code in `server/db/schema.sql`, runnable any time with `npm run db:setup` — written to be **idempotent** (safe to run more than once without error or duplication) using `CREATE TABLE IF NOT EXISTS`, so the exact same file can set up a brand-new empty database from scratch just as safely as it does nothing on a database that already has these tables.
 
 ## Third-party services used
@@ -85,12 +101,13 @@ CivicFix/
 ├── client/                        # React frontend
 │   └── src/
 │       ├── App.jsx                # Route definitions
+│       ├── config.js               # The one place the backend's address is defined
 │       ├── context/AuthContext.jsx  # Shared login state, used app-wide
 │       ├── pages/                 # One file per full page (Home, Login, ReportIssue, IssueDetail, ...)
 │       └── assets/                # Images used by the frontend
 ├── server/                        # Express backend
-│   ├── index.js                   # Entry point — starts the server, mounts routes, global error handler
-│   ├── db.js                      # Postgres connection pool
+│   ├── index.js                   # Entry point — starts the server, mounts routes, global error handler, CORS config
+│   ├── db.js                      # Postgres connection pool (supports DATABASE_URL or local env vars)
 │   ├── db/
 │   │   ├── schema.sql             # CREATE TABLE statements — the real, runnable database schema
 │   │   └── runSchema.js           # `npm run db:setup` runs schema.sql against whatever .env points at
@@ -118,23 +135,37 @@ CivicFix/
 | `POST /api/issues/:id/upvote` | logged-in users | Upvotes an issue (once per person) |
 | `PATCH /api/issues/:id/status` | admins only | Moves an issue's status forward |
 
+## Deployment architecture
+
+CivicFix runs on three separate, free-tier hosting services — a deliberate reflection of the same "three independent pieces talking over the network" design described above, now spread across three real, independently-hosted locations instead of one machine:
+
+| Piece | Hosted on | Live address |
+|---|---|---|
+| Frontend (React) | **Vercel** | [civic-fix-liart.vercel.app](https://civic-fix-liart.vercel.app) |
+| Backend (Express) | **Render** | `civicfix-ai5d.onrender.com` |
+| Database (Postgres) | **Neon** | (connection string only — not public) |
+
+A few deployment-specific details worth knowing:
+
+- **Why Neon and not Render for the database**: Render's free Postgres tier automatically deletes the entire database 30 days after creation — a hard expiry, not just a usage limit. Neon's free tier has no expiration date; it only "sleeps" (pauses compute, never deletes data) after a period of inactivity, waking itself automatically within about a second of the next request. For a project meant to stay live and demoable indefinitely, that difference made Neon the right choice.
+- **Environment variables replace hardcoded values**: locally, the backend reads five separate database settings (`DB_USER`, `DB_HOST`, etc.) from a `.env` file. In production, Render instead provides one `DATABASE_URL` connection string (Neon's format) — `server/db.js` supports both, so the same code runs unmodified in both places. Similarly, the frontend's `VITE_API_URL` points at `localhost:3000` locally and at the real Render backend address in production, set directly in Vercel's dashboard and baked into the site the next time it builds.
+- **Automatic redeploys**: both Render and Vercel are connected directly to this project's GitHub repository. Every `git push` to the `main` branch triggers both platforms to automatically rebuild and redeploy — no manual redeploy step required for ordinary changes.
+- **CORS is locked down in production** to only accept requests from the real Vercel address above, rather than the wide-open "any origin" setting used during local development.
+
 ## Running this project yourself
 
-This project isn't deployed to a public URL yet, so running it locally is currently the only way to try it. You'll need Node.js and PostgreSQL installed, plus your own free Cloudinary account.
+The live site above is the easiest way to try CivicFix — no setup needed. To run it locally instead (for development or code review), you'll need Node.js and PostgreSQL installed, plus your own free Cloudinary and Neon (or local Postgres) accounts.
 
 1. Clone the repository and install dependencies in both `client` and `server` (`npm install` in each folder).
 2. Create a `server/.env` file with your own database credentials, a JWT secret of your choosing, and your own Cloudinary credentials (see the placeholder names in `CLAUDE.md`'s "Cloudinary setup" section) — this file is intentionally left out of the repository, since it holds real secrets.
 3. Create an empty Postgres database, then run `npm run db:setup` from inside `server` to create all the tables.
 4. Start the backend (`npm run dev` inside `server`) and the frontend (`npm run dev` inside `client`) in two separate terminals.
 
-## Deployment status
+## Known limitations, and one deliberate decision worth mentioning
 
-Not yet deployed. The plan is to host the backend and database on **Render** and the frontend on **Vercel**, both free-tier services — this is the one remaining piece of this project.
-
-## Known limitations
-
-- Location is stored as plain typed text, with no map or real coordinates.
-- Admin accounts are promoted manually in the database — there's no self-serve "become an admin" flow, matching how real systems avoid letting anyone grant themselves elevated access.
+- **Location is stored as plain typed text**, with no map or stored coordinates. A map on the Issue Detail page (using free OpenStreetMap geocoding and Leaflet) was actually built and working, then deliberately removed at a later stage after running into integration issues — the full feature was cleanly reverted rather than left half-working, with no leftover code or dead dependencies. This was a real engineering call: shipping a simpler, fully working app over a fragile "extra" feature.
+- **Admin accounts are promoted manually** in the database — there's no self-serve "become an admin" flow, matching how real systems avoid letting anyone grant themselves elevated access.
+- **The backend "sleeps" on its free hosting tier** after 15 minutes of inactivity, adding a one-time delay to the first request after a quiet period. This is a hosting-tier tradeoff, not an application bug — upgrading to a paid tier removes it entirely.
 
 ## Glossary of key terms used in this project
 
