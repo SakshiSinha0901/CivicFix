@@ -6,6 +6,7 @@
   background: #f3f1e7;
   border-bottom: 2px solid #e6e2d2;
   font-family: 'Nunito Sans', system-ui, sans-serif;
+  position: relative; /* lets the mobile dropdown position itself against this bar */
 }
 
 .navbar-brand {
@@ -21,6 +22,30 @@
   font-weight: 800;
   color: #211f18;
   letter-spacing: -0.2px;
+}
+
+/* Hamburger / close toggle. Hidden by default -- only appears once the
+   media query below turns it on, at the same breakpoint where the links
+   and buttons stop fitting in one row. */
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* On desktop this wrapper doesn't create a box of its own at all --
+   "display: contents" tells the browser to treat navbar-links and
+   navbar-actions as if they were direct children of .navbar, so the
+   original three-way spacing (logo / links / buttons) is unchanged. */
+.navbar-menu {
+  display: contents;
 }
 
 .navbar-links {
@@ -92,4 +117,75 @@
 .btn-solid:hover {
   background: #384512;
   border-color: #384512;
+}
+
+/* ---- Mobile: below this width, the logo + 3 links + 2 buttons no
+   longer fit in one row, so we switch to a hamburger + dropdown. ---- */
+@media (max-width: 780px) {
+  .navbar {
+    padding: 16px 20px;
+  }
+
+  .navbar-toggle {
+    display: flex;
+  }
+
+  /* Now that it's not desktop, .navbar-menu needs to actually be a
+     positioned box again (not "contents") so it can become a dropdown
+     panel anchored under the bar. It's hidden unless menuOpen added the
+     "navbar-menu-open" class in Navbar.jsx. */
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-menu.navbar-menu-open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 14px 20px 20px;
+    background: #f3f1e7;
+    border-bottom: 2px solid #e6e2d2;
+    box-shadow: 0 14px 28px rgba(33, 31, 24, 0.1);
+    z-index: 20;
+  }
+
+  .navbar-menu-open .navbar-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+
+  .navbar-menu-open .nav-link {
+    padding: 12px 6px;
+    border-bottom: none;
+    border-radius: 10px;
+  }
+
+  .navbar-menu-open .nav-link-active {
+    background: #eef0dd;
+  }
+
+  .navbar-menu-open .navbar-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid #e6e2d2;
+  }
+
+  .navbar-menu-open .navbar-greeting {
+    padding: 4px 6px;
+  }
+
+  .navbar-menu-open .btn {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
 }
