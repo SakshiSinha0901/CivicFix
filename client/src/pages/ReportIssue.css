@@ -368,14 +368,31 @@
     flex-direction: column;
   }
 
+  /* This panel is purely decorative (no form fields live here) -- on a
+     phone-width screen it was stacking above the form and pushing every
+     real input below the fold before the visitor had scrolled at all.
+     Hiding it here (mobile only -- desktop keeps the full two-column
+     layout untouched) means the actual form is what you see first. */
   .report-illustration {
-    min-height: 200px;
-    order: -1;
+    display: none;
   }
 
-  .report-illustration-doodle,
-  .report-illustration-hazard {
-    display: none;
+  /* The green badge above the form was also sized for a spacious desktop
+     card -- shrinking it here lets a bit more of the real form fit in one
+     view too. */
+  .report-panel {
+    padding: 28px 24px 32px;
+  }
+
+  .report-panel .auth-badge {
+    width: 32px;
+    height: 32px;
+    margin: 0 0 12px;
+  }
+
+  .report-panel .auth-badge svg {
+    width: 16px;
+    height: 16px;
   }
 }
 

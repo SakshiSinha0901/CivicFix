@@ -16,6 +16,15 @@ function LandingHero() {
   const [navbarHeight, setNavbarHeight] = useState(80)
   const [reducedMotion, setReducedMotion] = useState(false)
 
+  // On a narrow/phone screen, the "How it works" section (3 stacked cards
+  // of text) is taller than a phone screen -- but the hijacked-scroll stage
+  // above has a FIXED height and no scrolling of its own, so anything
+  // taller than it just gets clipped at the bottom. Rather than trying to
+  // squeeze that content to fit, mobile gets the same plain, fully-
+  // scrollable fallback that reduced-motion visitors already get below --
+  // it's simply the right layout for a short, narrow screen either way.
+  const [isMobile, setIsMobile] = useState(false)
+
   // Measure the real Navbar's height instead of hardcoding a number, so
   // this keeps working even if Navbar's own padding ever changes later.
   useEffect(() => {
@@ -31,8 +40,27 @@ function LandingHero() {
     setReducedMotion(query.matches)
   }, [])
 
+  // Same idea as the reduced-motion check above, but for screen width.
+  // matchMedia's own "change" event (rather than a one-off check) means
+  // this also updates live if someone resizes the browser or rotates a
+  // device, instead of only being correct at the moment the page first
+  // loaded.
   useEffect(() => {
-    if (reducedMotion) return // the plain fallback further down handles this case
+    const query = window.matchMedia('(max-width: 700px)')
+    setIsMobile(query.matches)
+
+    function handleChange(e) {
+      setIsMobile(e.matches)
+    }
+
+    query.addEventListener('change', handleChange)
+    return () => query.removeEventListener('change', handleChange)
+  }, [])
+
+  const useStaticLayout = reducedMotion || isMobile
+
+  useEffect(() => {
+    if (useStaticLayout) return // the plain fallback further down handles this case
 
     const stage = stageRef.current
     if (!stage) return
@@ -76,9 +104,9 @@ function LandingHero() {
       stage.removeEventListener('touchstart', onTouchStart)
       stage.removeEventListener('touchmove', onTouchMove)
     }
-  }, [reducedMotion])
+  }, [useStaticLayout])
 
-  if (reducedMotion) {
+  if (useStaticLayout) {
     return (
       <div className="landing-static">
         <HeroContent />
