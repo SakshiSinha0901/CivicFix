@@ -371,9 +371,36 @@
   /* This panel is purely decorative (no form fields live here) -- on a
      phone-width screen it was stacking above the form and pushing every
      real input below the fold before the visitor had scrolled at all.
-     Hiding it here (mobile only -- desktop keeps the full two-column
-     layout untouched) means the actual form is what you see first. */
+     Rather than removing it, it's shrunk down to a slim banner strip here
+     (mobile only -- desktop keeps the full two-column layout untouched) so
+     it's still visible, just out of the form's way. */
   .report-illustration {
+    order: -1;
+    flex: none;
+    min-height: 0;
+  }
+
+  .report-illustration-doodle,
+  .report-illustration-hazard {
+    display: none;
+  }
+
+  .report-illustration-content {
+    flex-direction: row;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+
+  .report-illustration-content svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .report-illustration-caption {
+    font-size: 17px;
+  }
+
+  .report-illustration-text {
     display: none;
   }
 

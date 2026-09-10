@@ -109,7 +109,16 @@ function LandingHero() {
   if (useStaticLayout) {
     return (
       <div className="landing-static">
-        <HeroContent />
+        {/* Same blurred photo + scrim the animated desktop version uses,
+            just wrapped around only the hero text -- not the whole page --
+            so "How it works" below stays on the plain background and keeps
+            scrolling freely instead of getting clipped by a fixed-height
+            stage. */}
+        <div className="landing-static-hero">
+          <img className="stage-bg" src={heroIllustration} alt="" aria-hidden="true" />
+          <div className="stage-scrim" />
+          <HeroContent />
+        </div>
         <HowItWorksContent />
       </div>
     )

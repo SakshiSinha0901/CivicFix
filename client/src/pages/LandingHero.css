@@ -210,6 +210,23 @@
   padding: 24px 24px 96px;
 }
 
+/* Wraps just the hero text on the static/mobile layout so the blurred
+   background photo + scrim (same visual as the animated desktop version)
+   sits behind only this section -- "How it works" below keeps scrolling
+   on the plain page background, so nothing gets clipped. */
+.landing-static-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-static-hero .hero-content {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 760px) {
   .hero-content h1 {
     font-size: 34px;
@@ -221,5 +238,9 @@
 
   .how-steps {
     grid-template-columns: 1fr;
+  }
+
+  .landing-static-hero {
+    min-height: 440px;
   }
 }
