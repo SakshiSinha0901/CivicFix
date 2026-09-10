@@ -369,33 +369,13 @@
   }
 
   .report-illustration {
-    min-height: 140px;
+    min-height: 200px;
     order: -1;
   }
 
   .report-illustration-doodle,
   .report-illustration-hazard {
     display: none;
-  }
-
-  /* The green badge above the form (and the panel padding around it) was
-     sized for a spacious desktop card -- on a phone it was pushing the
-     actual form fields below the fold before you'd scrolled at all.
-     Shrinking it here (mobile only -- desktop is untouched) means more of
-     the real form is visible in one view. */
-  .report-panel {
-    padding: 28px 24px 32px;
-  }
-
-  .report-panel .auth-badge {
-    width: 32px;
-    height: 32px;
-    margin: 0 0 12px;
-  }
-
-  .report-panel .auth-badge svg {
-    width: 16px;
-    height: 16px;
   }
 }
 

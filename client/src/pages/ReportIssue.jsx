@@ -7,25 +7,6 @@ import './ReportIssue.css'
 const CATEGORIES = ['Pothole', 'Garbage', 'Broken Streetlight', 'Water Leakage']
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024 // 5MB -- matches the limit set on the backend (uploadMiddleware.js)
 
-const MIN_LOCATION_LENGTH = 5
-const MIN_DESCRIPTION_LENGTH = 10
-
-// There's no way to perfectly detect "meaningless text" without real
-// language understanding -- that's a much bigger feature than this form
-// needs. These two checks instead catch the common, practical cases: real
-// words almost always contain a vowel, and keyboard-mashing often repeats
-// the same character over and over ("aaaaaa", "kkkkkkk"). Not bulletproof,
-// but it meaningfully raises the bar above "any random letters."
-const HAS_VOWEL = /[aeiouAEIOU]/
-const REPEATED_CHAR = /(.)\1{4,}/ // same character 5+ times in a row
-
-function looksLikeRealText(value) {
-  const trimmed = value.trim()
-  if (!HAS_VOWEL.test(trimmed)) return false
-  if (REPEATED_CHAR.test(trimmed)) return false
-  return true
-}
-
 function ReportIssue() {
   const { token, isLoggedIn } = useAuth()
   const navigate = useNavigate()
@@ -89,22 +70,6 @@ function ReportIssue() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-
-    // Checked before setIsSubmitting(true) -- same pattern as Signup's name
-    // check, so a validation failure never shows "Reporting…" on the button
-    // for something that was never going to be sent.
-    const location = form.location.trim()
-    if (location.length < MIN_LOCATION_LENGTH || !looksLikeRealText(location)) {
-      setError('Please enter a real location (e.g. a street name or landmark).')
-      return
-    }
-
-    const description = form.description.trim()
-    if (description && (description.length < MIN_DESCRIPTION_LENGTH || !looksLikeRealText(description))) {
-      setError('Please write a real description, or leave this field blank.')
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
